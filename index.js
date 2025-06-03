@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { urlencoded } from 'express';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
 import connectDB from './utils/db.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config({});
 
@@ -10,6 +11,8 @@ const PORT = process.env.PORT || 8000;
 
 //Middleware
 app.use(express.json())
+app.use(express.urlencoded({extended:true}))
+app.use(cookieParser())
 
 
 // API
