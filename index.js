@@ -1,6 +1,8 @@
 import express, { urlencoded } from 'express';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
+import projectRouter from "./routes/project.route.js"
+import requesterRouter from "./routes/requester.route.js"
 import connectDB from './utils/db.js';
 import cookieParser from 'cookie-parser';
 
@@ -17,6 +19,8 @@ app.use(cookieParser())
 
 // API
 app.use("/api/v1/user",userRouter)
+app.use("/api/v1/need",projectRouter)
+app.use("/api/v1/request", requesterRouter)
 
 
 
