@@ -57,21 +57,42 @@ export const login = async (req, res) => {
             });
         }
 
-        let user=await User.findOne({email})
-        if(!user){
+        let user = await User.findOne({ email })
+        if (!user) {
             return res.status(404).json({
-                message:"User not found",
-                success:false
+                message: "User not found",
+                success: false
             })
         }
 
-        const isPasswordMatch = await bcrypt.compare(password,user.password)
-        if(!isPasswordMatch){
+        const isPasswordMatch = await bcrypt.compare(password, user.password)
+        if (!isPasswordMatch) {
             return res.status(401).json({
-                message:"Invalid credentials",
-                success:false
+                message: "Invalid credentials",
+                success: false
             })
         }
+
+        const tokenData = {
+            userId: user._id
+        }
+        const token = await jwt.sign(tokenData, process.env.SECRET_KEY, { expiresIn: '1d' })
+
+        user = {
+            _id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+            role: user.role,
+            skills: user.skills,
+            bio: user.bio,
+            profilePic: user.profilePic
+
+        }
+        return res.status(200).cookie("token", token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpsOnly: true, sameSite: 'strict' }).json({
+            message: `Welcome back ${user.fullname}`,
+            user,
+            success: true
+        })
 
 
     } catch (error) {
@@ -82,4 +103,16 @@ export const login = async (req, res) => {
         });
     }
 };
+
+export const logout = async (req, res) => {
+    try {
+        return res.status(200).cookie("token", "", { maxAge: 0 }).json({
+            message: "Logged out Successfully.",
+            success: true
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
